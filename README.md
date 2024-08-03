@@ -25,3 +25,12 @@ etcdctl --endpoints=http://192.168.5.40:2379 get --prefix /coreos.com/network/su
 ### 必要
 1. etcd 的資訊
 2. etc-flannel目錄下的config.json檔案, 主要是flannel 的網段設定
+3. 啟動後， `cat config/run-flannel/subnet.env` 內容，需要修改docker daemon.json，加入以下內容
+```
+{
+  "bip": "< FLANNEL_SUBNET Value >",
+  "mtu": < FLANNEL_MTU VALUE >,
+  "iptables": false,
+  "ip-masq": false
+}
+```
