@@ -33,6 +33,15 @@ etcdctl --endpoints=http://192.168.5.40:2379 get --prefix /coreos.com/network/su
   "iptables": false,
   "ip-masq": false
 }
+
+{
+  "bip": "10.0.23.1/24",
+  "mtu": 1450,
+  "iptables": false,
+  "ip-masq": false
+}
+
+
 ```
 
 ### 注意事項
