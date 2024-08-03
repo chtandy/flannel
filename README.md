@@ -34,3 +34,6 @@ etcdctl --endpoints=http://192.168.5.40:2379 get --prefix /coreos.com/network/su
   "ip-masq": false
 }
 ```
+
+### 注意事項
+- 若容器服務無法取得flannel 網路，可以在`docker-compose.yml`內指定`network_mode: bridge`
