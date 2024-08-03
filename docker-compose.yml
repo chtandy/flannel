@@ -5,7 +5,6 @@ services:
     build: ./
     network_mode: host
     privileged: true
-    restart: always
     environment:
       - ETCD_ENDPOINTS=http://192.168.5.40:2379  # etcd 
       - IFACE=ens32                              # 實體網卡
