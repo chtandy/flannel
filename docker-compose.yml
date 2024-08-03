@@ -13,3 +13,4 @@ services:
       - ./config/etc-flannel:/etc/flannel
       - /dev/net:/dev/net
     restart: always
+    init: true
