@@ -46,3 +46,13 @@ etcdctl --endpoints=http://192.168.5.40:2379 get --prefix /coreos.com/network/su
 
 ### 注意事項
 - 若容器服務無法取得flannel 網路，可以在`docker-compose.yml`內指定`network_mode: bridge`
+
+- 有些有些OS有設定iptable, 會造成容器連不到外面，或是容器無法跨主機通訊，則需加入以下
+```
+# 允許 Flannel 子網間的直接通信
+sudo iptables -t nat -A POSTROUTING -s 10.0.0.0/8 -d 10.0.0.0/8 -j RETURN
+
+#為外部通信設置 MASQUERADE
+sudo iptables -t nat -A POSTROUTING -s 10.0.0.0/8 ! -d 10.0.0.0/8 -j MASQUERADE
+```
+
