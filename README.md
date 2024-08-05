@@ -92,7 +92,7 @@ WantedBy=multi-user.target
 
 - 啟用並啟動服務
 ```
-chmos +x /etc/rc.local
+chmod +x /etc/rc.local
 sudo systemctl enable rc-local
 sudo systemctl start rc-local
 ```
