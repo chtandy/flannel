@@ -66,3 +66,33 @@ sudo iptables-save > /etc/sysconfig/iptables
 ```
 sudo iptables-restore < /etc/sysconfig/iptables
 ```
+
+
+
+
+
+### 建立rc.local 服務
+- 創建文件 /etc/systemd/system/rc-local.service
+```
+[Unit]
+Description=/etc/rc.local Compatibility
+ConditionPathExists=/etc/rc.local
+
+[Service]
+Type=forking
+ExecStart=/etc/rc.local start
+TimeoutSec=0
+StandardOutput=tty
+RemainAfterExit=yes
+SysVStartPriority=99
+
+[Install]
+WantedBy=multi-user.target
+```
+
+- 啟用並啟動服務
+```
+chmos +x /etc/rc.local
+sudo systemctl enable rc-local
+sudo systemctl start rc-local
+```
