@@ -30,19 +30,20 @@ etcdctl --endpoints=http://192.168.5.40:2379 get --prefix /coreos.com/network/su
 {
   "bip": "< FLANNEL_SUBNET Value >",
   "mtu": < FLANNEL_MTU VALUE >,
-  "iptables": false,
-  "ip-masq": false
+  "iptables": true,
+  "ip-masq": true
 }
 
 {
   "bip": "10.0.23.1/24",
   "mtu": 1450,
-  "iptables": false,
-  "ip-masq": false
+  "iptables": true,
+  "ip-masq": true
 }
-
-
 ```
+iptables 設置決定 Docker 是否應自動配置 iptables 規則來管理容器的網絡流量
+ip-masq 設置決定 Docker 是否應對從容器發出的流量進行 IP 偽裝（IP Masquerading），這是一種特殊的 NAT 用於隱藏內部網絡的 IP。
+iptables 和 ip-masq 預設值都是true, 故可以省略
 
 ### 注意事項
 - 若容器服務無法取得flannel 網路，可以在`docker-compose.yml`內指定`network_mode: bridge`
