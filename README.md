@@ -56,3 +56,13 @@ sudo iptables -t nat -A POSTROUTING -s 10.0.0.0/8 -d 10.0.0.0/8 -j RETURN
 sudo iptables -t nat -A POSTROUTING -s 10.0.0.0/8 ! -d 10.0.0.0/8 -j MASQUERADE
 ```
 
+### aws almolinux
+- 備份
+```
+sudo iptables-save > /etc/sysconfig/iptables
+```
+
+- rc.local 還原
+```
+sudo iptables-restore < /etc/sysconfig/iptables
+```
