@@ -1,31 +1,38 @@
-# 使用 Ubuntu 22.04 作為基礎鏡像
-FROM ubuntu:22.04
+# 使用 alpine 作為基礎鏡像
+FROM alpine:3.20.2
 
-# 更新包列表並安裝必要的工具
-RUN apt-get update && \
-    apt-get install -y wget && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# 安裝必要的工具，包括 gettext 包，它提供 envsubst
+RUN apk add --no-cache \
+    curl \
+    iproute2 \
+    gettext
 
-# 設置工作目錄
-WORKDIR /app
 
 # 下載 Flannel 二進制文件
-RUN wget https://github.com/flannel-io/flannel/releases/download/v0.25.5/flanneld-amd64 && \
-    chmod +x flanneld-amd64 && \
-    mv flanneld-amd64 /usr/local/bin/flanneld
+RUN curl -L https://github.com/flannel-io/flannel/releases/download/v0.25.5/flanneld-amd64 -o /usr/local/bin/flanneld && \
+    chmod +x /usr/local/bin/flanneld
 
-# 創建一個啟動腳本
-RUN echo '#!/bin/sh\n\
-exec /usr/local/bin/flanneld \
--etcd-endpoints=$ETCD_ENDPOINTS \
--etcd-prefix=$ETCD_PREFIX \
--iface=$IFACE \
-"$@"' > /start.sh && \
+# 創建配置文件模板
+RUN mkdir -p /etc/flannel && \
+    echo '{' > /etc/flannel/config.json.template && \
+    echo '  "Network": "${FLANNEL_NETWORK}",' >> /etc/flannel/config.json.template && \
+    echo '  "SubnetLen": ${FLANNEL_SUBNETLEN},' >> /etc/flannel/config.json.template && \
+    echo '  "Backend": {' >> /etc/flannel/config.json.template && \
+    echo '    "Type": "vxlan"' >> /etc/flannel/config.json.template && \
+    echo '  }' >> /etc/flannel/config.json.template && \
+    echo '}' >> /etc/flannel/config.json.template
+
+# 創建啟動腳本
+RUN echo '#!/bin/sh' > /start.sh && \
+    echo 'envsubst < /etc/flannel/config.json.template > /etc/flannel/config.json' >> /start.sh && \
+    echo 'cat /etc/flannel/config.json' >> /start.sh && \
+    echo 'exec /usr/local/bin/flanneld -etcd-endpoints=$ETCD_ENDPOINTS -etcd-prefix=$ETCD_PREFIX -iface=$IFACE "$@" -subnet-file=/run/flannel/subnet.env -net-config-path=/etc/flannel/config.json' >> /start.sh && \
     chmod +x /start.sh
 
 # 設置環境變量的默認值
-ENV ETCD_PREFIX="/coreos.com/network"
+ENV ETCD_PREFIX="/coreos.com/network" \
+    FLANNEL_NETWORK="10.0.0.0/8" \
+    FLANNEL_SUBNETLEN=20
 
 # 設置 ENTRYPOINT
 ENTRYPOINT ["/start.sh"]

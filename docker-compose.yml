@@ -8,8 +8,9 @@ services:
     environment:
       - ETCD_ENDPOINTS=http://192.168.5.40:2379  # etcd 
       - IFACE=ens32                              # 實體網卡
+      - FLANNEL_NETWORK=10.0.0.0/8           
+      - FLANNEL_SUBNETLEN=24
     volumes:
-      - ./config/run-flannel:/run/flannel
-      - ./config/etc-flannel:/etc/flannel
+      - ./subnet-file:/run/flannel
       - /dev/net:/dev/net
     restart: always
