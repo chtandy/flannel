@@ -12,12 +12,6 @@ services:
       - ./subnet-file:/run/flannel
       - /dev/net:/dev/net
     restart: always
-    healthcheck:
-      test: ["CMD-SHELL", "ping -c 1 -W 1 192.168.5.40 || exit 1"]  # 使用適當的檢查命令
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
     deploy:
       resources:
         limits:
